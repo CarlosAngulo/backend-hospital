@@ -1,39 +1,41 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
-var app = express();
 var User = require('../models/user');
+var mdAutentication = require('../middlewares/autentication');
 
-//Routes
+var app = express();
 
 // ===========================
 // Get all users
 // ===========================
 
-app.get( '/', (req, res, next) => {
-    User.find({}, 'name email img role')
-        .exec(
-            (err, users) => {
-                if ( err ) {
-                    return res.status(500).json({
-                        ok: false,
-                        message: 'DB error loading users',
-                        error: err
-                    });
-                };
-    
-                res.status(200).json({
-                    ok: true,
-                    users
+app.get( '/', (req, res) => {
+    User
+    .find({}, 'name email img role')
+    .exec(
+        (err, users) => {
+            if ( err ) {
+                return res.status(500).json({
+                    ok: false,
+                    message: 'DB error loading users',
+                    error: err
                 });
-            }
-        )
+            };
+
+            res.status(200).json({
+                ok: true,
+                users
+            });
+        }
+    )
 });
+
 
 // ===========================
 // Create a new user
 // ===========================
 
-app.post( '/', (req, res) => {
+app.post( '/', mdAutentication.verifyToken, (req, res, next) => {
 
     var body = req.body;
     var user = new User({
@@ -44,7 +46,6 @@ app.post( '/', (req, res) => {
         role: body.role
     });
 
-    console.log(req.body)
     user.save( (err, savedUser) => {
         if ( err ) {
             return res.status(400).json({
@@ -55,7 +56,8 @@ app.post( '/', (req, res) => {
         }
         res.status(201).json({
             ok: true,
-            user: savedUser
+            user: savedUser,
+            userToken: req.user
         });
 
     });
@@ -66,7 +68,7 @@ app.post( '/', (req, res) => {
 // Update user data 
 // ===========================
 
-app.put('/:id', (req, res) => {
+app.put('/:id', mdAutentication.verifyToken, (req, res) => {
     
     let id = req.params.id;
     let body = req.body;
@@ -119,7 +121,7 @@ app.put('/:id', (req, res) => {
 // Deleting user by ID 
 // ===========================
 
-app.delete('/:id', (req, res) => {
+app.delete('/:id', mdAutentication.verifyToken, (req, res) => {
     
     let id = req.params.id;
 
