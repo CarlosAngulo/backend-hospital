@@ -8,7 +8,16 @@ var app = express();
 // ===========================
 
 app.get('/', (req, res) => {
-    Doctor.find({}, (err, doctors) => {
+
+    var limit = parseInt(req.query.limit) || 0;
+    var from = parseInt(req.query.from) || 0;
+
+    Doctor.find({})
+        .skip(from)
+        .limit(limit)
+        .populate('user', 'name email')
+        .populate('hospital')
+        .exec( (err, doctors) => {
         if(err){
             return res.status(500).json({
                 ok: false,
@@ -16,11 +25,13 @@ app.get('/', (req, res) => {
                 error: err
             });
         }
-
-        res.status(200).json({
-            ok: true,
-            doctors
-        })
+        Doctor.count({}, (err, count) => {
+            res.status(200).json({
+                ok: true,
+                doctors,
+                total: count
+            });
+        });
     });
 });
 

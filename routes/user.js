@@ -10,8 +10,14 @@ var app = express();
 // ===========================
 
 app.get( '/', (req, res) => {
+
+    var limit = parseInt(req.query.limit) || 0;
+    var from = parseInt(req.query.from) || 0;
+
     User
     .find({}, 'name email img role')
+    .skip(from)
+    .limit(limit)
     .exec(
         (err, users) => {
             if ( err ) {
@@ -22,10 +28,14 @@ app.get( '/', (req, res) => {
                 });
             };
 
-            res.status(200).json({
-                ok: true,
-                users
-            });
+            User.count({}, (err, count) => {
+                res.status(200).json({
+                    ok: true,
+                    users,
+                    total: count
+                });
+            })
+
         }
     )
 });

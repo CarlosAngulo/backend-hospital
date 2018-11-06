@@ -5,6 +5,7 @@ var appRoutes = require('./routes/app')
 var userRoutes = require('./routes/user');
 var hospitalRoutes = require('./routes/hospital');
 var doctorRoutes = require('./routes/doctor');
+var searchRoutes = require('./routes/search');
 var loginRoutes = require('./routes/login');
 var bodyParser = require('body-parser');
 
@@ -27,6 +28,7 @@ app.use('/user', userRoutes);
 app.use('/login', loginRoutes);
 app.use('/hospital', hospitalRoutes);
 app.use('/doctor', doctorRoutes);
+app.use('/search', searchRoutes);
 app.use('/', appRoutes);
 
 //Listen requests

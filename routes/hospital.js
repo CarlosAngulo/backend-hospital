@@ -8,7 +8,13 @@ var app = express();
 // ===========================
 
 app.get('/', (req, res) => {
-    Hospital.find({}, (err, hospitals) => {
+
+    var limit = parseInt(req.query.limit) || 0;
+    var from = parseInt(req.query.from) || 0;
+
+    Hospital.find({})
+    .populate('user', 'name email')
+    .exec ((err, hospitals) => {
         if(err){
             return res.status(500).json({
                 ok: false,
@@ -17,10 +23,13 @@ app.get('/', (req, res) => {
             });
         }
 
-        res.status(200).json({
-            ok: true,
-            hospitals
-        })
+        Hospital.count({}, (err, count) => {
+            res.status(200).json({
+                ok: true,
+                hospitals,
+                total: count
+            });
+        });
     });
 });
 
