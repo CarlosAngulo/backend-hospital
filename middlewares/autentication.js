@@ -6,7 +6,9 @@ var SEED = require('../config/config').SEED;
 // ===========================
 
 exports.verifyToken = function(req, res, next) {
+    
     token = req.query.token;
+    
     jwt.verify( token, SEED, (err, decoded) => {
         console.log('Middleware');
         if (err) {

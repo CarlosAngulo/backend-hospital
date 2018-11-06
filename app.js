@@ -3,6 +3,8 @@ var express = require('express');
 var mongoose = require('mongoose');
 var appRoutes = require('./routes/app')
 var userRoutes = require('./routes/user');
+var hospitalRoutes = require('./routes/hospital');
+var doctorRoutes = require('./routes/doctor');
 var loginRoutes = require('./routes/login');
 var bodyParser = require('body-parser');
 
@@ -23,6 +25,8 @@ app.use(bodyParser.json());
 //Routes
 app.use('/user', userRoutes);
 app.use('/login', loginRoutes);
+app.use('/hospital', hospitalRoutes);
+app.use('/doctor', doctorRoutes);
 app.use('/', appRoutes);
 
 //Listen requests
