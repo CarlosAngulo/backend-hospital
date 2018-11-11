@@ -6,13 +6,48 @@ var User = require('../models/user');
 var app = express();
 
 // ===========================
-// Get all 
+// Search by Collection 
+// ===========================
+app.get('/collection/:collection/:term', (req, res) => {
+    var collection = req.params.collection;
+    var term = new RegExp(req.params.term, 'i');
+    var promise;
+    switch(collection) {
+        case 'hospitals':
+            promise = searchHospitals(term)
+        break;
+        case 'doctors':
+            promise = searchDoctors(term)
+        break;
+        case 'users':
+            promise = searchUsers(term)
+        break;
+        default:
+            return res.status(400).json({
+                ok: false,
+                message: 'Search collection availabes: hospitals, users and doctors',
+                error: {message: 'Type of search is not valid'}
+            });
+        break;
+    }
+    promise.then(data => {
+        res.status(200).json({
+            ok: true,
+            [collection]: data
+        });
+    })
+    .catch();
+});
+
+
+// ===========================
+// General Search 
 // ===========================
 
 app.get('/all/:term', (req, res) => {
 
-    var term = new RegExp(req.params.term, 'i' );
-
+    var term = new RegExp(req.params.term, 'i');
+    
     Promise.all([
         searchHospitals(term),
         searchDoctors(term),
@@ -69,7 +104,7 @@ function searchDoctors(term) {
 }
 
 function searchUsers(term) {
-    
+
     return new Promise((resolve, reject) => {
         User.find({}, 'name email role')
         .or([
