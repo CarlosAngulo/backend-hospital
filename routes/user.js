@@ -27,8 +27,7 @@ app.get( '/', (req, res) => {
                     error: err
                 });
             };
-
-            User.count({}, (err, count) => {
+            User.estimatedDocumentCount({}, (err, count) => {
                 res.status(200).json({
                     ok: true,
                     users,

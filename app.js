@@ -7,6 +7,8 @@ var hospitalRoutes = require('./routes/hospital');
 var doctorRoutes = require('./routes/doctor');
 var searchRoutes = require('./routes/search');
 var loginRoutes = require('./routes/login');
+var uploadRoutes = require('./routes/upload');
+var images = require('./routes/images');
 var bodyParser = require('body-parser');
 
 
@@ -15,7 +17,10 @@ var app = express();
 
 //DB Connection
 mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res) => {
-    if ( err )  throw err;
+    if ( err )  {
+        console.log(err)
+        throw err
+    };
     console.log('Base de datos: \x1b[32m%s\x1b[0n', 'online');    
 });
 
@@ -29,6 +34,8 @@ app.use('/login', loginRoutes);
 app.use('/hospital', hospitalRoutes);
 app.use('/doctor', doctorRoutes);
 app.use('/search', searchRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/images', images);
 app.use('/', appRoutes);
 
 //Listen requests
